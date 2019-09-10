@@ -26,7 +26,15 @@ const xorRule = rulesArray => {
     .filter(result => result).length === 1
 }
 
+/* 
+structure of a ruleSet
+{
+  type: String, // enum ['AND', 'OR', 'XOR']
+  rules: [Boolean, Function returning boolean, ruleSet]
+}
 
+
+*/
 const engine = (ruleSet) => {
   const { type = 'AND' } = ruleSet
   const methodMap = {
