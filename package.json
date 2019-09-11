@@ -1,8 +1,8 @@
 {
   "name": "jbre",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "jbre (jay-bray) is a json basic rule engine",
-  "main": "index.js",
+  "main": "src/ruleEngine.js",
   "scripts": {
     "test": "mocha src/**/*.test.js --recursive",
     "test:watch": "mocha src/**/*.test.js --recursive --watch"
