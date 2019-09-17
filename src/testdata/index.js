@@ -21,6 +21,7 @@ class RuleSet {
   }
   setType (type = 'AND') {
     this.ruleSet.type = type
+    return this
   }
   addRules (rule = true, repeat = 1) {
     if (Array.isArray(rule)) this.ruleSet.rules.push(...rule)

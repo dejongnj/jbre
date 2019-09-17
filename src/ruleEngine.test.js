@@ -1,15 +1,16 @@
 const chai = require('chai')
 const ruleEngine = require('./ruleEngine')
 const testRules = require('./testdata')
-
+const { AND, XOR, OR } = require('./constants/ruleTypes')
+const util = require('util')
 const { expect } = chai
-const { createAllTrue, createAllFalse, createOneTrue, 
+const { createAllTrue, createAllFalse, createOneTrue, createRuleSet,
         createOneFalse, createVariableRules, randomFromRange } = testRules
 
 describe('rules', () => {
   const getFinalResult = rulesObject => {
     const ruleTree = ruleEngine(rulesObject)
-    return ruleTree.evaluate().value
+    return ruleTree.root.value
   }
   describe('basic', () => {
     it('should be a function', () => {
@@ -504,6 +505,80 @@ describe('rules', () => {
           const ruleSet = createRule(A, B, C)
           expect(getFinalResult(ruleSet)).to.equal(false)
         })
+      })
+    })
+  })
+})
+
+describe('messages', () => {
+  describe('basic error messages', () => {
+    let ruleSet
+    beforeEach(() => {
+      ruleSet = createRuleSet()
+      ruleSet.setType('AND')
+    })
+    describe('AND', () => {
+      let ruleTree
+      beforeEach(() => {
+        ruleSet = {
+          type: AND,
+          rules: [
+            () => true,
+            (ruleNode) => {
+              ruleNode.name = 'HELLO WORLD'
+              ruleNode.message = 'XxXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+              return false
+            },
+            {
+              type: OR,
+              name: 'My test passing OR',
+              rules: [() => true, () => false, () => false, true, true]
+            },
+            {
+              type: OR,
+              name: 'My test failing OR',
+              rules: [() => false, () => false, () => false, false, false,
+                {
+                  type: XOR,
+                  name: 'FAILING ALL FALSE XOR',
+                  rules: [false, false, false]
+                },
+                {
+                  type: XOR,
+                  name: 'FAILING MORE THAN ONE TRUE XOR',
+                  rules: [true, true, false],
+                },
+              ]
+            },
+            {
+              type: XOR,
+              name: 'PASSING XOR---',
+              rules: [()=> false, true, false, false],
+            },
+          ]
+        }
+        // ruleTree = ruleEngine(ruleSet)
+      })
+      it('does something', () => {
+        // console.log(ruleTree.root.result)
+        // console.log(util.inspect(ruleTree.errors.analyze(), false, null, true))
+        // console.log(ruleTree.root.evaluate(ruleTree.root))
+      })
+      it('does something simple rule', () => {
+        ruleSet = {
+          type: AND,
+          rules: [
+            (ruleNode) => {
+              ruleNode.name = 'HELLO WORLD'
+              ruleNode.message = 'XxXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+              return false
+            },
+            true
+          ]
+        }
+        ruleTree = ruleEngine(ruleSet)
+        console.log('===========================')
+        console.log(ruleTree.analyize())
       })
     })
   })

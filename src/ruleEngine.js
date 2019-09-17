@@ -1,8 +1,8 @@
 const { RuleTree } = require('./ruleTree')
+const util = require('util')
 
-const ruleEngine = (rulesObject) => {
-  const ruleTree = new RuleTree()
-  ruleTree.build(rulesObject)
+const ruleEngine = (rulesObject, options = {}) => {
+  const ruleTree = new RuleTree(rulesObject, options)
   return ruleTree
 }
 

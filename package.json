@@ -5,7 +5,7 @@
   "main": "src/ruleEngine.js",
   "scripts": {
     "test": "mocha src/**/*.test.js --recursive",
-    "test:watch": "mocha src/**/*.test.js --recursive --watch"
+    "test:watch": "mocha \"src/**/*.test.js\" --recursive --watch"
   },
   "keywords": [],
   "author": "",

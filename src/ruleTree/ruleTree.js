@@ -1,46 +1,28 @@
 const { AND, OR, XOR, TERMINAL } = require('../constants/ruleTypes')
 const RuleNode = require('./ruleNode')
+const ResultTree = require('../errorTree')
+
+const buildMessage = ruleNode => {
+  return {
+    name: ruleNode.name,
+    message: ruleNode.message,
+    value: ruleNode.value,
+    rules: []
+  }
+}
 
 class RuleTree {
-  constructor () {
-    this.root = null
+  constructor (rulesObject, options = {}) {
+    this.root = this.build(rulesObject)
   }
   build (ruleObject, parentNode) { // builds tree from a rules object
-    const ruleNode = new RuleNode(ruleObject, parentNode)
-    if (!this.root) this.root = ruleNode
-    if (typeof ruleObject === 'object' && Array.isArray(ruleObject.rules)) {
-      ruleObject.rules.forEach(rule => {
-        const childRule = this.build(rule, ruleNode)
-        ruleNode.rules.push(childRule)
-      })
-    }
-    return ruleNode
+    return new RuleNode(ruleObject)
   }
-  evaluate (ruleNode = this.root) {
-    if (!ruleNode) throw new Error('no node to evaluate; you may need to call ruleTree.build before trying to evaluate')
-    const { type } = ruleNode
-    if (type === TERMINAL) return ruleNode
-    if (type === AND) return this._andEvaluate(ruleNode)
-    if (type === XOR) return this._xorEvaluate(ruleNode)
-    if (type === OR) return this._orEvaluate(ruleNode)
-    throw new Error('unrecognized type: ' + type)
-
+  evaluate () {
+   return this.root.value
   }
-  _andEvaluate (parentRuleNode) {
-    const { rules = [] } = parentRuleNode
-    parentRuleNode.value = rules.map(ruleNode => this.evaluate(ruleNode)).every(ruleNode => !!ruleNode.value)
-    return parentRuleNode
-  }
-  _orEvaluate (parentRuleNode) {
-    const { rules = [] } = parentRuleNode
-    parentRuleNode.value = rules.map(ruleNode => this.evaluate(ruleNode)).some(ruleNode => !!ruleNode.value)
-    return parentRuleNode
-  }
-  _xorEvaluate (parentRuleNode) {
-    const { rules = [] } = parentRuleNode
-    parentRuleNode.value = rules.map(ruleNode => this.evaluate(ruleNode))
-      .filter(ruleNode => !!ruleNode.value).length === 1 // exactly one true
-    return parentRuleNode
+  analyize () {
+    return JSON.stringify(this.root.analysis)
   }
 }
 
