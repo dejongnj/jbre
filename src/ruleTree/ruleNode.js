@@ -43,17 +43,23 @@ const getTerminalResult = (ruleObject, ruleNode, parentNode) => {
 
 const getNodeDescription = (ruleObject) => {
   const typeofRuleObject = typeof ruleObject
-  return typeofRuleObject === 'object' ? ruleObject.description || '' : `${TERMINAL} - ${typeofRuleObject}` 
+  return typeofRuleObject === 'object' ? ruleObject.description || '' : `${TERMINAL}-${typeofRuleObject}` 
 }
 
-const getNodeId = (ruleObject) => {
+const constructRuleNodeId = ( ruleObject, parentNode) => {
   const typeofRuleObject = typeof ruleObject
-  return typeofRuleObject === 'object' ? ruleObject.id || '' : `${TERMINAL} - ${typeofRuleObject}` 
+  const suffix = (typeofRuleObject === 'object') ? `${ruleObject.type}${ruleObject.name ? `-${ruleObject.name}` : '-no-name-provided'}` : `TERMINAL-${typeof ruleObject}`
+  return parentNode ? `${parentNode.id}-${suffix}` : suffix  
+}
+
+const getNodeId = (ruleObject, parentNode) => {
+  const typeofRuleObject = typeof ruleObject
+  return (typeofRuleObject === 'object' && ruleObject.id) ? ruleObject.id : constructRuleNodeId(ruleObject, parentNode)
 }
 
 class RuleNode {
   constructor (ruleObject, parentNode = null) {
-    this.id = getNodeId(ruleObject) // to change soon; will require or create id
+    this.id = getNodeId(ruleObject, parentNode) // to change soon; will require or create id
     this.name = getNodeName(ruleObject)
     this.description = getNodeDescription(ruleObject)
     this.type = getTypeOfNode(ruleObject)

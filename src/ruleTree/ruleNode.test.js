@@ -23,9 +23,9 @@ describe('RuleNode', () => {
           const ruleObject = booleanRule
           const ruleNode = new RuleNode(ruleObject)
           const { id, name, description, type, parent, rules, value, analysis } = ruleNode
-          expect(id).to.equal(`${TERMINAL} - boolean`)
+          expect(id).to.equal(`${TERMINAL}-boolean`)
           expect(name).to.equal(`${TERMINAL} rule`)
-          expect(description).to.equal(`${TERMINAL} - boolean`)
+          expect(description).to.equal(`${TERMINAL}-boolean`)
           expect(type).to.equal(TERMINAL)
           expect(parent).to.equal(null)
           expect(rules).to.deep.equal([])
@@ -47,9 +47,9 @@ describe('RuleNode', () => {
           const ruleObject = functionRule
           const ruleNode = new RuleNode(ruleObject)
           const { id, name, description, type, parent, rules, value, analysis } = ruleNode
-          expect(id).to.equal(`${TERMINAL} - function`)
+          expect(id).to.equal(`${TERMINAL}-function`)
           expect(name).to.equal(`${TERMINAL} rule`)
-          expect(description).to.equal(`${TERMINAL} - function`)
+          expect(description).to.equal(`${TERMINAL}-function`)
           expect(type).to.equal(TERMINAL)
           expect(parent).to.equal(null)
           expect(rules).to.deep.equal([])

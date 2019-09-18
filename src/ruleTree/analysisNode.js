@@ -2,10 +2,10 @@ class AnalysisNode {
   constructor (ruleNode, analysisOptions = {}) {
     const { id, value, name, type, description } = ruleNode
     this.id = id
-    this.value = value
     this.name = name
     this.description = description
     this.type = type
+    this.value = value
     this.childRules = {
       passing: [],
       failing: []
