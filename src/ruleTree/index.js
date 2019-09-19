@@ -1,8 +1,4 @@
 
-const RuleNode = require('./ruleNode')
-const RuleTree = require('./ruleTree')
-
-module.exports = {
-  RuleNode,
-  RuleTree,
-}
+const RuleTree = require('./RuleTree')
+  
+module.exports = RuleTree

@@ -2,7 +2,6 @@ const chai = require('chai')
 const ruleEngine = require('./ruleEngine')
 const testRules = require('./testdata')
 const { AND, XOR, OR } = require('./constants/ruleTypes')
-const util = require('util')
 const { expect } = chai
 const { createAllTrue, createAllFalse, createOneTrue, createRuleSet,
         createOneFalse, createVariableRules, randomFromRange } = testRules
@@ -578,7 +577,7 @@ describe('messages', () => {
         }
         ruleTree = ruleEngine(ruleSet)
         console.log('===========================')
-        console.log(ruleTree.analyize())
+        console.log(ruleTree.getAnalysis())
       })
     })
   })

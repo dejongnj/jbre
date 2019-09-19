@@ -1,28 +1,18 @@
-const { AND, OR, XOR, TERMINAL } = require('../constants/ruleTypes')
-const RuleNode = require('./ruleNode')
-const ResultTree = require('../errorTree')
-
-const buildMessage = ruleNode => {
-  return {
-    name: ruleNode.name,
-    message: ruleNode.message,
-    value: ruleNode.value,
-    rules: []
-  }
-}
+const RuleNode = require('./RuleNode')
 
 class RuleTree {
-  constructor (rulesObject, options = {}) {
-    this.root = this.build(rulesObject)
+  constructor (rulesObject, globalOptions = {}) {
+    this.options = globalOptions
+    this.root = this.build(rulesObject, globalOptions)
   }
-  build (ruleObject, parentNode) { // builds tree from a rules object
-    return new RuleNode(ruleObject)
+  build (ruleObject) { // builds tree from a rules object
+    return new RuleNode(ruleObject, null, this.options)
   }
   evaluate () {
    return this.root.value
   }
-  analyize () {
-    return JSON.stringify(this.root.analysis)
+  getAnalysis (stringifiedJSON = false) {
+    return stringifiedJSON ? JSON.stringify(this.root.analysis) : this.root.analyze
   }
 }
 

@@ -14,6 +14,8 @@ const AnalysisNode = require('./analysisNode')
 }
 
 */
+const isObject = value => typeof value === 'object'
+
 const getTypeOfNode = ruleObject => {
   // returns one of TERMINAL, AND, OR, XOR or throws an error
   const terminalTypes = ['boolean', 'function']
@@ -43,35 +45,47 @@ const getTerminalResult = (ruleObject, ruleNode, parentNode) => {
 
 const getNodeDescription = (ruleObject) => {
   const typeofRuleObject = typeof ruleObject
-  return typeofRuleObject === 'object' ? ruleObject.description || '' : `${TERMINAL}-${typeofRuleObject}` 
+  return isObject(ruleObject) ? ruleObject.description || '' : `${TERMINAL}-${typeofRuleObject}` 
 }
 
 const constructRuleNodeId = ( ruleObject, parentNode) => {
-  const typeofRuleObject = typeof ruleObject
-  const suffix = (typeofRuleObject === 'object') ? `${ruleObject.type}${ruleObject.name ? `-${ruleObject.name}` : '-no-name-provided'}` : `TERMINAL-${typeof ruleObject}`
+  const suffix = isObject(ruleObject) ? `${ruleObject.type}${ruleObject.name ? `-${ruleObject.name}` : '-no-name-provided'}` : `TERMINAL-${typeof ruleObject}`
   return parentNode ? `${parentNode.id}-${suffix}` : suffix  
 }
 
 const getNodeId = (ruleObject, parentNode) => {
-  const typeofRuleObject = typeof ruleObject
-  return (typeofRuleObject === 'object' && ruleObject.id) ? ruleObject.id : constructRuleNodeId(ruleObject, parentNode)
+  return (isObject(ruleObject) && ruleObject.id) ? ruleObject.id : constructRuleNodeId(ruleObject, parentNode)
+}
+
+const getOptions = (ruleObject) => {
+  if (!isObject(ruleObject)) return {}
+  const { options = {} } = ruleObject
+  return options
+}
+
+const getMeta = (ruleObject, globalOptions) => {
+  const { meta: globalMeta = {}} = globalOptions
+  if (!isObject(ruleObject)) return Object.assign({}, globalMeta)
+  const { meta = {} } = ruleObject
+  if (!isObject(meta)) throw new Error('meta has to be an object')
+  return Object.assign({}, globalMeta, meta)
 }
 
 class RuleNode {
-  constructor (ruleObject, parentNode = null) {
+  constructor (ruleObject, parentNode = null, globalOptions = {}) {
     this.id = getNodeId(ruleObject, parentNode) // to change soon; will require or create id
     this.name = getNodeName(ruleObject)
     this.description = getNodeDescription(ruleObject)
     this.type = getTypeOfNode(ruleObject)
     this.parent = parentNode
-    // this function has to be last, since if the rule is a function,
-    // the function gets passed the ruleNode instance,
-    // which it can use to modify the node if necessary (e.g. set message etc.)
+    this.globalOptions = globalOptions
+    this.options = getOptions(ruleObject)
+    this.meta = getMeta(ruleObject, globalOptions)
     if (this.type === TERMINAL) {
       this.rules = []
       this.value = getTerminalResult(ruleObject, this, parentNode)
     } else {
-      this.rules = ruleObject.rules.map(childRuleObject => new RuleNode(childRuleObject, this))
+      this.rules = ruleObject.rules.map(childRuleObject => new RuleNode(childRuleObject, this, globalOptions))
       this.value = this.evaluate().value
     }
     this.analysis = this.analyze()
