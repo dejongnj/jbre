@@ -71,36 +71,22 @@ const getMeta = (ruleObject, globalOptions) => {
   return Object.assign({}, globalMeta, meta)
 }
 
+const typeToEvaluationFunctionsMap = {
+  AND: evaluatedRules => evaluatedRules.every(childRuleNode => !!childRuleNode.value),
+  NAND: evaluatedRules => !evaluatedRules.every(childRuleNode => !!childRuleNode.value),
+  OR: evaluatedRules => evaluatedRules.some(childRuleNode => !!childRuleNode.value),
+  NOR: evaluatedRules => !evaluatedRules.some(childRuleNode => !!childRuleNode.value),
+  XOR: evaluatedRules => evaluatedRules.filter(childRuleNode => !!childRuleNode.value).length % 2 === 1, // odd number trues
+  NXOR: evaluatedRules => !(evaluatedRules.filter(childRuleNode => !!childRuleNode.value).length % 2 === 1), // even number trues,
+  EXACTLY_ONE: evaluatedRules => evaluatedRules.filter(childRuleNode => !!childRuleNode.value).length === 1,
+}
+
 const evaluateByType = type => ruleNode => {
+  if (type === TERMINAL) return ruleNode
   const evaluatedRules = ruleNode.evaluateChildRules()
-  let value
-  switch (type) {
-    case AND: 
-      value = evaluatedRules.every(childRuleNode => !!childRuleNode.value)
-      break
-    case OR:
-      value = evaluatedRules.some(childRuleNode => !!childRuleNode.value)
-      break
-    case XOR:
-      value = evaluatedRules.filter(childRuleNode => !!childRuleNode.value).length % 2 === 1 // odd number trues
-      break
-    case NAND: 
-      value = !evaluatedRules.every(childRuleNode => !!childRuleNode.value)
-      break
-    case NOR:
-      value = !evaluatedRules.some(childRuleNode => !!childRuleNode.value)
-      break
-    case NXOR:
-      value = !(evaluatedRules.filter(childRuleNode => !!childRuleNode.value).length % 2 === 1) // even number trues
-      break
-    case EXACTLY_ONE:
-      value = evaluatedRules.filter(childRuleNode => !!childRuleNode.value).length === 1
-      break
-    case TERMINAL:
-      return ruleNode
-  }
-  value = !!value
-  ruleNode.value = value
+  const evaulationFunction = typeToEvaluationFunctionsMap[type]
+  if (!evaulationFunction) throw new Error('unsupported type of evaluation function')
+  ruleNode.value = evaulationFunction(evaluatedRules)
   return ruleNode
 }
 

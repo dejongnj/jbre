@@ -3,7 +3,7 @@ const OR = 'OR'
 const XOR = 'XOR'
 const NAND = 'NAND'
 const NOR = 'NOR'
-const NXOR = 'XNOR'
+const NXOR = 'NXOR'
 const EXACTLY_ONE = 'EXACTLY_ONE'
 const TERMINAL = 'TERMINAL'
 
