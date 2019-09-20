@@ -33,7 +33,7 @@ const getNodeName = (ruleObject) => {
   return name ? name : (ruleObject && `${ruleObject.type} rule`) || 'NO INFO RULE NAME'
 }
 
-const getTerminalResult = (ruleObject, ruleNode, parentNode) => {
+const getTerminalResult = (ruleObject, ruleNode) => {
   // this function is only called for TERMINAL types which are leaf nodes where the value is known
   // either by directly asserting it (boolean) or calculating it from a function. It does not have any child nodes
   // ruleObject is either a boolean which is returned as is to get the value
