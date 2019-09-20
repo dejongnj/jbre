@@ -6,10 +6,7 @@ class AnalysisNode {
     this.description = description
     this.type = type
     this.value = value
-    this.childRules = {
-      passing: [],
-      failing: []
-    }
+    this.rules = []
     const { analyze } = analysisOptions
 
     if (analyze && typeof analyze === 'function') {
@@ -21,11 +18,7 @@ class AnalysisNode {
   _defaultAnalysis (ruleNode) {
     const { rules = []} = ruleNode
     rules.forEach(ruleNode => {
-      if (ruleNode.value === true) {
-        this.childRules.passing.push(ruleNode.analysis)
-      } else if (ruleNode.value === false) {
-        this.childRules.failing.push(ruleNode.analysis)
-      }
+        this.rules.push(ruleNode.analysis)
     })
   }
 }

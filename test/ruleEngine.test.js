@@ -1,7 +1,7 @@
 const chai = require('chai')
-const ruleEngine = require('./ruleEngine')
+const ruleEngine = require('../src/ruleEngine')
 const testRules = require('./testdata')
-const { AND, XOR, OR } = require('./constants/ruleTypes')
+const { AND, NAND, OR, NOR, XOR, NXOR, EXACTLY_ONE, TERMINAL } = require('../src/constants/ruleTypes')
 const { expect } = chai
 const { createAllTrue, createAllFalse, createOneTrue, createRuleSet,
         createOneFalse, createVariableRules, randomFromRange } = testRules
@@ -11,111 +11,205 @@ describe('rules', () => {
     const ruleTree = ruleEngine(rulesObject)
     return ruleTree.root.value
   }
+  const getEvenComplement = (num, min, max) => {
+    let evenComplement = randomFromRange(min, max)
+    while ((evenComplement + num) % 2) {
+      evenComplement = randomFromRange(min, max)
+    }
+    return evenComplement
+  }
+  const getOddComplement = (num, min, max) => {
+    let getOddComplement = randomFromRange(min, max)
+    while ((getOddComplement + num) % 2 !== 1) {
+      getOddComplement = randomFromRange(min, max)
+    }
+    return getOddComplement
+  }
   describe('basic', () => {
     it('should be a function', () => {
       expect(typeof ruleEngine).to.equal('function')
     })
-    describe('AND', () => {
-      it('should handle function rules resulting in true', () => {
-        const allTrue = createAllTrue('AND', Function)
-        expect(getFinalResult(allTrue)).to.equal(true)
-        const randomAllTrue = createAllTrue('AND', Function, randomFromRange(1, 10))
-        expect(getFinalResult(randomAllTrue)).to.equal(true)
+    ;[AND, NAND].forEach(type => {
+      let result
+      beforeEach(() => {
+        result = type === AND
       })
-      it('should handle boolean rules resulting in true', () => {
-        const allTrue = createAllTrue('AND', Boolean)
-        expect(getFinalResult(allTrue)).to.equal(true)
-        const randomAllTrue = createAllTrue('AND', Boolean, randomFromRange(1, 10))
-        expect(getFinalResult(randomAllTrue)).to.equal(true)
-      })
-      it('should handle function rules resulting in false', () => {
-        const allFalse = createAllFalse('AND', Function)
-        expect(getFinalResult(allFalse)).to.equal(false)
-        const oneFalse = createOneFalse('AND', Function)
-        expect(getFinalResult(oneFalse)).to.equal(false)
-        const randomOneFalse = createOneFalse('AND', Function, randomFromRange(1, 10))
-        expect(getFinalResult(randomOneFalse)).to.equal(false)
-        const options = {
-          functionTrue: randomFromRange(0, 10),
-          functionFalse: randomFromRange(1, 10)
-        }
-        const randomVariableFalse = createVariableRules('AND', options)
-        expect(getFinalResult(randomVariableFalse)).to.equal(false)
-      })
-      it('should handle boolean rules resulting in false', () => {
-        const allFalse = createAllFalse('AND', Boolean)
-        expect(getFinalResult(allFalse)).to.equal(false)
-        const oneFalse = createOneFalse('AND', Boolean)
-        expect(getFinalResult(oneFalse)).to.equal(false)
-        const randomOneFalse = createOneFalse('AND', Boolean, randomFromRange(1, 10))
-        expect(getFinalResult(randomOneFalse)).to.equal(false)
-        const options = {
-          functionTrue: randomFromRange(0, 10),
-          functionFalse: randomFromRange(1, 10)
-        }
-        const randomVariableFalse = createVariableRules('AND', options)
-        expect(getFinalResult(randomVariableFalse)).to.equal(false)
-      })
-    })
-    describe('OR', () => {
-      it('should handle function rules resulting in true', () => {
-        const allTrue = createAllTrue('OR', Function)
-        expect(getFinalResult(allTrue)).to.equal(true)
-        const oneTrue = createOneTrue('OR', Function)
-        expect(getFinalResult(oneTrue)).to.equal(true)
-        const oneFalse = createOneFalse('OR', Function)
-        expect(getFinalResult(oneFalse)).to.equal(true)
-
-      })
-      it('should handle boolean rules resulting in true', () => {
-        const allTrue = createAllTrue('OR', Boolean)
-        expect(getFinalResult(allTrue)).to.equal(true)
-        const oneTrue = createOneTrue('OR', Boolean)
-        expect(getFinalResult(oneTrue)).to.equal(true)
-        const oneFalse = createOneFalse('OR', Boolean)
-        expect(getFinalResult(oneFalse)).to.equal(true)
-
-      })
-      it('should handle function rules resulting in false', () => {
-        const allFalse = createAllFalse('OR', Function)
-        expect(getFinalResult(allFalse)).to.equal(false)
-      })
-      it('should handle boolean rules resulting in false', () => {
-        const allFalse = createAllFalse('OR', Boolean)
-        expect(getFinalResult(allFalse)).to.equal(false)
+      describe(`${type} basic type results`, () => {
+        it('should handle function rules resulting in true', () => {
+          const allTrue = createAllTrue(type, Function)
+          expect(getFinalResult(allTrue)).to.equal(result)
+          const randomAllTrue = createAllTrue(type, Function, randomFromRange(1, 10))
+          expect(getFinalResult(randomAllTrue)).to.equal(result)
+        })
+        it('should handle boolean rules resulting in true', () => {
+          const result = type === AND          
+          const allTrue = createAllTrue(type, Boolean)
+          expect(getFinalResult(allTrue)).to.equal(result)
+          const randomAllTrue = createAllTrue(type, Boolean, randomFromRange(1, 10))
+          expect(getFinalResult(randomAllTrue)).to.equal(result)
+        })
+        it('should handle function rules resulting in false', () => {
+          const allFalse = createAllFalse(type, Function)
+          expect(getFinalResult(allFalse)).to.equal(!result)
+          const oneFalse = createOneFalse(type, Function)
+          expect(getFinalResult(oneFalse)).to.equal(!result)
+          const randomOneFalse = createOneFalse(type, Function, randomFromRange(1, 10))
+          expect(getFinalResult(randomOneFalse)).to.equal(!result)
+          const options = {
+            functionTrue: randomFromRange(0, 10),
+            functionFalse: randomFromRange(1, 10)
+          }
+          const randomVariableFalse = createVariableRules(type, options)
+          expect(getFinalResult(randomVariableFalse)).to.equal(!result)
+        })
+        it('should handle boolean rules resulting in false', () => {
+          const allFalse = createAllFalse(type, Boolean)
+          expect(getFinalResult(allFalse)).to.equal(!result)
+          const oneFalse = createOneFalse(type, Boolean)
+          expect(getFinalResult(oneFalse)).to.equal(!result)
+          const randomOneFalse = createOneFalse(type, Boolean, randomFromRange(1, 10))
+          expect(getFinalResult(randomOneFalse)).to.equal(!result)
+          const options = {
+            functionTrue: randomFromRange(0, 10),
+            functionFalse: randomFromRange(1, 10)
+          }
+          const randomVariableFalse = createVariableRules(type, options)
+          expect(getFinalResult(randomVariableFalse)).to.equal(!result)
+        })
       })
     })
-    describe('XOR', () => {
+    
+    ;[OR, NOR].forEach(type => {
+      let result
+      beforeEach(() => {
+        result = type === OR
+      })
+      describe(`${type} basic type results`, () => {
+        it('should handle function rules resulting in true', () => {
+          const allTrue = createAllTrue(type, Function)
+          expect(getFinalResult(allTrue)).to.equal(result)
+          const oneTrue = createOneTrue(type, Function)
+          expect(getFinalResult(oneTrue)).to.equal(result)
+          const oneFalse = createOneFalse(type, Function)
+          expect(getFinalResult(oneFalse)).to.equal(result)
+  
+        })
+        it('should handle boolean rules resulting in true', () => {       
+          const allTrue = createAllTrue(type, Boolean)
+          expect(getFinalResult(allTrue)).to.equal(result)
+          const oneTrue = createOneTrue(type, Boolean)
+          expect(getFinalResult(oneTrue)).to.equal(result)
+          const oneFalse = createOneFalse(type, Boolean)
+          expect(getFinalResult(oneFalse)).to.equal(result)
+  
+        })
+        it('should handle function rules resulting in false', () => {   
+          const allFalse = createAllFalse(type, Function)
+          expect(getFinalResult(allFalse)).to.equal(!result)
+        })
+        it('should handle boolean rules resulting in false', () => {                         
+          const allFalse = createAllFalse(type, Boolean)
+          expect(getFinalResult(allFalse)).to.equal(!result)
+        })
+      })
+    })
+    
+    ;[XOR, NXOR].forEach(type => {
+      describe(`${type} basic type results`, () => {
+        let result
+        beforeEach(() => {
+          result = type === XOR
+        })
+        it('should handle function rules resulting in true', () => {
+          const oneTrue = createOneTrue(type, Function)
+          expect(getFinalResult(oneTrue)).to.equal(result)
+        })
+        it('should handle boolean rules resulting in true', () => {
+          const oneTrue = createOneTrue(type, Boolean)
+          expect(getFinalResult(oneTrue)).to.equal(result)
+        })
+        it('should handle function rules resulting in false', () => {
+          const allTrue = createAllTrue(type, Function, getEvenComplement(0, 2, 10))
+          expect(getFinalResult(allTrue)).to.equal(!result)
+          const allFalse = createAllFalse(type, Function)
+          expect(getFinalResult(allFalse)).to.equal(!result)
+          const options = {
+            functionTrue: getEvenComplement(0, 2, 10),
+            functionFalse: randomFromRange(2, 5)
+          }
+          const evenTrue = createVariableRules(type, options)
+          expect(getFinalResult(evenTrue)).to.equal(!result)
+        })
+        it('should handle even number of boolean rules resulting in false', () => {
+          const allTrue = createAllTrue(type, Boolean, 4)
+          expect(getFinalResult(allTrue)).to.equal(!result)
+          const allFalse = createAllFalse(type, Boolean)
+          expect(getFinalResult(allFalse)).to.equal(!result)
+  
+          const options = {
+            booleanTrue: getEvenComplement(0, 2, 10),
+            booleanFalse: randomFromRange(2, 5)
+          }
+          const twoOrMoreTrue = createVariableRules(type, options,)
+          expect(getFinalResult(twoOrMoreTrue)).to.equal(!result)
+        })
+        it('should handle odd number of boolean rules resulting in false', () => {
+          const allTrue = createAllTrue(type, Boolean, 7)
+          expect(getFinalResult(allTrue)).to.equal(result)
+          const booleanTrue = getOddComplement(0, 1, 5)
+          const options = {
+            booleanTrue,
+            booleanFalse: randomFromRange(2, 5)
+          }
+          const twoOrMoreTrue = createVariableRules(type, options)
+          expect(getFinalResult(twoOrMoreTrue)).to.equal(result)
+        })
+      })
+    })
+
+    describe(`${EXACTLY_ONE} basic type results`, () => {
       it('should handle function rules resulting in true', () => {
-        const oneTrue = createOneTrue('XOR', Function)
+        const oneTrue = createOneTrue(EXACTLY_ONE, Function)
         expect(getFinalResult(oneTrue)).to.equal(true)
       })
       it('should handle boolean rules resulting in true', () => {
-        const oneTrue = createOneTrue('XOR', Boolean)
+        const oneTrue = createOneTrue(EXACTLY_ONE, Boolean)
         expect(getFinalResult(oneTrue)).to.equal(true)
       })
       it('should handle function rules resulting in false', () => {
-        const allTrue = createAllTrue('XOR', Function)
+        const allTrue = createAllTrue(EXACTLY_ONE, Function, randomFromRange(2, 5))
         expect(getFinalResult(allTrue)).to.equal(false)
-        const allFalse = createAllFalse('XOR', Function)
+        const allFalse = createAllFalse(EXACTLY_ONE, Function)
         expect(getFinalResult(allFalse)).to.equal(false)
         const options = {
           functionTrue: randomFromRange(2, 5),
           functionFalse: randomFromRange(2, 5)
         }
-        const twoOrMoreTrue = createVariableRules('XOR', options)
-        expect(getFinalResult(twoOrMoreTrue)).to.equal(false)
+        const randomTrue = createVariableRules(EXACTLY_ONE, options)
+        expect(getFinalResult(randomTrue)).to.equal(false)
       })
-      it('should handle boolean rules resulting in false', () => {
-        const allTrue = createAllTrue('XOR', Boolean)
+      it('should handle even number of boolean rules resulting in false', () => {
+        const allTrue = createAllTrue(EXACTLY_ONE, Boolean, randomFromRange(2, 10))
         expect(getFinalResult(allTrue)).to.equal(false)
-        const allFalse = createAllFalse('XOR', Boolean)
+        const allFalse = createAllFalse(EXACTLY_ONE, Boolean)
         expect(getFinalResult(allFalse)).to.equal(false)
+
         const options = {
-          booleanTrue: randomFromRange(2, 5),
+          booleanTrue: getEvenComplement(0, 2, 10),
           booleanFalse: randomFromRange(2, 5)
         }
-        const twoOrMoreTrue = createVariableRules('XOR', options)
+        const twoOrMoreTrue = createVariableRules(EXACTLY_ONE, options,)
+        expect(getFinalResult(twoOrMoreTrue)).to.equal(false)
+      })
+      it('should handle odd number of boolean rules resulting in false', () => {
+        const allTrue = createAllTrue(EXACTLY_ONE, Boolean, 7)
+        expect(getFinalResult(allTrue)).to.equal(false)
+        const booleanTrue = randomFromRange(2, 10)
+        const options = {
+          booleanTrue,
+          booleanFalse: randomFromRange(2, 5)
+        }
+        const twoOrMoreTrue = createVariableRules(EXACTLY_ONE, options)
         expect(getFinalResult(twoOrMoreTrue)).to.equal(false)
       })
     })
@@ -228,6 +322,7 @@ describe('rules', () => {
       })
     })
     describe('XOR', () => {
+      let evenAllTrue, nestedEvenAllTrue, oddAllTrue, nestedOddAllTrue
       beforeEach(() => {
         exactlyOneTrueFunction = createVariableRules('XOR', {
           functionTrue: 1,
@@ -255,8 +350,30 @@ describe('rules', () => {
           booleanTrue: randomFromRange(1, 10),
           returnWrapper: true
         }).shuffle()
+        evenAllTrue = (() => {
+            const numberOfFunctions = randomFromRange(1, 10)
+            return createVariableRules('XOR', {
+            functionTrue: numberOfFunctions,
+            booleanTrue: getEvenComplement(numberOfFunctions, 1, 10),
+            returnWrapper: true
+          }).shuffle()
+        })()
+        oddAllTrue = (() => {
+            const numberOfFunctions = randomFromRange(1, 10)
+            return createVariableRules('XOR', {
+            functionTrue: numberOfFunctions,
+            booleanTrue: getOddComplement(numberOfFunctions, 1, 10),
+            returnWrapper: true
+          }).shuffle()
+        })()
+        nestedEvenAllTrue = evenAllTrue.clone()
+          .addRules(evenAllTrue.getRuleSet())
+          .shuffle()
         nestedAllTrue = allTrue.clone()
           .addRules(allTrue.getRuleSet())
+          .shuffle()
+        nestedOddAllTrue = oddAllTrue.clone()
+          .addRules(evenAllTrue.getRuleSet()) // nested object should give false so that base object still has odd number
           .shuffle()
         doubleNestedAllTrue = allTrue.clone()
           .addRules(nestedAllTrue.getRuleSet())
@@ -292,19 +409,13 @@ describe('rules', () => {
         const allFalseDeeplyNestedOneTrue = allFalse.clone()
           .addRules(allFalseNestedOneTrue.getRuleSet())
         expect(getFinalResult(allFalseDeeplyNestedOneTrue.getRuleSet())).to.equal(true)
+        expect(getFinalResult(oddAllTrue.getRuleSet())).to.equal(true)
+        expect(getFinalResult(nestedOddAllTrue.getRuleSet())).to.equal(true)
       })
       it('should handle mixed and nested rules resulting in false', () => {
-        expect(getFinalResult(allTrue.getRuleSet())).to.equal(false)
-        expect(getFinalResult(nestedAllTrue.getRuleSet())).to.equal(false)
-        expect(getFinalResult(doubleNestedAllTrue.getRuleSet())).to.equal(false)
-        expect(getFinalResult(allFalse.getRuleSet())).to.equal(false)
+        expect(getFinalResult(evenAllTrue.getRuleSet())).to.equal(false)
+        expect(getFinalResult(nestedEvenAllTrue.getRuleSet())).to.equal(false)
         expect(getFinalResult(nestedAllFalse.getRuleSet())).to.equal(false)
-        expect(getFinalResult(doubleNestedAllFalse.getRuleSet())).to.equal(false)
-        expect(getFinalResult(variable.getRuleSet())).to.equal(false)
-        const allFalseTwoNestedTrues = allFalse.clone()
-          .addRules(exactlyOneTrue.getRuleSet())
-          .addRules(exactlyOneTrue.getRuleSet())
-        expect(getFinalResult(variable.getRuleSet())).to.equal(false)
       })
     })
     describe('Mixed rules', () => {
@@ -558,11 +669,6 @@ describe('messages', () => {
         }
         // ruleTree = ruleEngine(ruleSet)
       })
-      it('does something', () => {
-        // console.log(ruleTree.root.result)
-        // console.log(util.inspect(ruleTree.errors.analyze(), false, null, true))
-        // console.log(ruleTree.root.evaluate(ruleTree.root))
-      })
       it('does something simple rule', () => {
         ruleSet = {
           type: AND,
@@ -576,8 +682,6 @@ describe('messages', () => {
           ]
         }
         ruleTree = ruleEngine(ruleSet)
-        console.log('===========================')
-        console.log(ruleTree.getAnalysis())
       })
     })
   })

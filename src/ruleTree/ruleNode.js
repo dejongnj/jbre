@@ -1,4 +1,4 @@
-const { AND, OR, XOR, TERMINAL } = require('../constants/ruleTypes')
+const { AND, NAND, OR, NOR, XOR, NXOR, EXACTLY_ONE, TERMINAL } = require('../constants/ruleTypes')
 const AnalysisNode = require('./analysisNode')
 // what does a rule node look like:
 /*
@@ -16,11 +16,11 @@ const AnalysisNode = require('./analysisNode')
 */
 const isObject = value => typeof value === 'object'
 
-const getTypeOfNode = ruleObject => {
+const getNodeType = ruleObject => {
   // returns one of TERMINAL, AND, OR, XOR or throws an error
   const terminalTypes = ['boolean', 'function']
   if (terminalTypes.includes(typeof ruleObject)) return TERMINAL
-  const allowedTypes = [AND, XOR, OR, TERMINAL]
+  const allowedTypes = [AND, NAND, OR, NOR, XOR, NXOR, EXACTLY_ONE, TERMINAL]
   const validDataType = typeof ruleObject === 'object' && typeof ruleObject.type === 'string'
   if ( validDataType && allowedTypes.includes(ruleObject.type.toUpperCase())) return ruleObject.type.toUpperCase()
   throw new Error ('invalid type of rule for' + ruleObject)
@@ -40,7 +40,7 @@ const getTerminalResult = (ruleObject, ruleNode, parentNode) => {
   // or it is a function which is called with the argumnets of both the current ruleNode and the parentRuleNode
   if (typeof ruleObject === 'boolean') return ruleObject
   if (typeof ruleObject === 'function') return ruleObject(ruleNode)
-  throw new Error('only boolean and functions are valid rule types')
+  throw new Error('only boolean and functions are valid TERMINAL rule types')
 }
 
 const getNodeDescription = (ruleObject) => {
@@ -67,8 +67,41 @@ const getMeta = (ruleObject, globalOptions) => {
   const { meta: globalMeta = {}} = globalOptions
   if (!isObject(ruleObject)) return Object.assign({}, globalMeta)
   const { meta = {} } = ruleObject
-  if (!isObject(meta)) throw new Error('meta has to be an object')
+  if (!isObject(meta)) throw new Error('meta property has to be an object or undefined')
   return Object.assign({}, globalMeta, meta)
+}
+
+const evaluateByType = type => ruleNode => {
+  const evaluatedRules = ruleNode.evaluateChildRules()
+  let value
+  switch (type) {
+    case AND: 
+      value = evaluatedRules.every(childRuleNode => !!childRuleNode.value)
+      break
+    case OR:
+      value = evaluatedRules.some(childRuleNode => !!childRuleNode.value)
+      break
+    case XOR:
+      value = evaluatedRules.filter(childRuleNode => !!childRuleNode.value).length % 2 === 1 // odd number trues
+      break
+    case NAND: 
+      value = !evaluatedRules.every(childRuleNode => !!childRuleNode.value)
+      break
+    case NOR:
+      value = !evaluatedRules.some(childRuleNode => !!childRuleNode.value)
+      break
+    case NXOR:
+      value = !(evaluatedRules.filter(childRuleNode => !!childRuleNode.value).length % 2 === 1) // even number trues
+      break
+    case EXACTLY_ONE:
+      value = evaluatedRules.filter(childRuleNode => !!childRuleNode.value).length === 1
+      break
+    case TERMINAL:
+      return ruleNode
+  }
+  value = !!value
+  ruleNode.value = value
+  return ruleNode
 }
 
 class RuleNode {
@@ -76,49 +109,17 @@ class RuleNode {
     this.id = getNodeId(ruleObject, parentNode) // to change soon; will require or create id
     this.name = getNodeName(ruleObject)
     this.description = getNodeDescription(ruleObject)
-    this.type = getTypeOfNode(ruleObject)
+    this.type = getNodeType(ruleObject)
     this.parent = parentNode
     this.globalOptions = globalOptions
     this.options = getOptions(ruleObject)
     this.meta = getMeta(ruleObject, globalOptions)
-    if (this.type === TERMINAL) {
-      this.rules = []
-      this.value = getTerminalResult(ruleObject, this, parentNode)
-    } else {
-      this.rules = ruleObject.rules.map(childRuleObject => new RuleNode(childRuleObject, this, globalOptions))
-      this.value = this.evaluate().value
-    }
-    this.analysis = this.analyze()
+    this.setValue(ruleObject, parentNode, globalOptions)
+    this.analysis = this.analyze() // has to be after this.value is determined
   }
   evaluate (ruleNode = this) {
-    if (!ruleNode) throw new Error('no node to evaluate; you may need to call ruleTree.build before trying to evaluate')
     const { type } = ruleNode
-    if (type === TERMINAL) return this._terminalEvaluate(ruleNode)
-    if (type === AND) return this._andEvaluate(ruleNode)
-    if (type === XOR) return this._xorEvaluate(ruleNode)
-    if (type === OR) return this._orEvaluate(ruleNode)
-    throw new Error('unrecognized type: ' + type)
-  }
-  _andEvaluate (ruleNode) {
-    const evaluatedRules = ruleNode.evaluateChildRules()
-    const value = evaluatedRules.every(childRuleNode => !!childRuleNode.value)
-    ruleNode.value = value
-    return ruleNode
-  }
-  _orEvaluate (ruleNode) {
-    const evaluatedRules = ruleNode.evaluateChildRules()
-    const value = evaluatedRules.some(childRuleNode => !!childRuleNode.value)
-    ruleNode.value = value
-    return ruleNode
-  }
-  _xorEvaluate (ruleNode) {
-    const evaluatedRules = ruleNode.evaluateChildRules()
-    const value = evaluatedRules.filter(childRuleNode => !!childRuleNode.value).length === 1 // exactly one true
-    ruleNode.value = value
-    return ruleNode
-  }
-  _terminalEvaluate (ruleNode) {
-    return ruleNode
+    return evaluateByType(type)(ruleNode)
   }
   evaluateChildRules (ruleNode = this) {
     const { rules = [] } = ruleNode
@@ -126,6 +127,22 @@ class RuleNode {
   }
   analyze (ruleNode = this) {
     return new AnalysisNode(ruleNode)
+  }
+  setValue (ruleObject, parentNode = null, globalOptions = {}) {
+    if (this.type === TERMINAL) {
+      this.rules = []
+      if (!isObject(ruleObject)) {
+        this.value = getTerminalResult(ruleObject, this, parentNode)
+      } else {
+
+        const { evaluate } = ruleObject
+        if (!['function', 'boolean'].includes(typeof evaluate)) throw new Error('object TERMINAL type must have boolean or function evaluate property')
+        this.value = getTerminalResult(evaluate, this, parentNode)
+      }
+    } else {
+      this.rules = ruleObject.rules.map(childRuleObject => new RuleNode(childRuleObject, this, globalOptions))
+      this.value = this.evaluate().value
+    }
   }
 }
 

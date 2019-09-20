@@ -4,6 +4,7 @@ const XOR = 'XOR'
 const NAND = 'NAND'
 const NOR = 'NOR'
 const NXOR = 'XNOR'
+const EXACTLY_ONE = 'EXACTLY_ONE'
 const TERMINAL = 'TERMINAL'
 
 module.exports = {
@@ -13,5 +14,6 @@ module.exports = {
   NAND,
   NOR,
   NXOR,
+  EXACTLY_ONE,
   TERMINAL,
 }

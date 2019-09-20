@@ -1,7 +1,7 @@
 const chai = require('chai')
-const RuleNode = require('./RuleNode')
-const AnalysisNode = require('./analysisNode')
-const { AND, OR, XOR, TERMINAL } = require('../constants/ruleTypes')
+const RuleNode = require('../src/ruleTree/RuleNode')
+const AnalysisNode = require('../src/ruleTree/analysisNode')
+const { AND, OR, XOR, TERMINAL } = require('../src/constants/ruleTypes')
 const { expect } = chai
 
 const TEST_ID = 'TEST_ID'
@@ -15,7 +15,7 @@ const createRuleObject = (type, rules) => ({
     rules
   })
 
-describe.only('RuleNode', () => {
+describe('RuleNode', () => {
   describe('TERMINAL rule', () => {
     describe('Boolean values', () => {
       [true, false].forEach(booleanRule => {
@@ -46,8 +46,7 @@ describe.only('RuleNode', () => {
           expect(analysis.description).to.equal(description)
           expect(analysis.type).to.equal(type)
           expect(analysis.value).to.equal(value)
-          expect(analysis.childRules.passing).to.deep.equal([])
-          expect(analysis.childRules.failing).to.deep.equal([])
+          expect(analysis.rules).to.deep.equal([])
         })
       })
     })
@@ -77,8 +76,99 @@ describe.only('RuleNode', () => {
           expect(analysis.description).to.equal(description)
           expect(analysis.type).to.equal(type)
           expect(analysis.value).to.equal(value)
-          expect(analysis.childRules.passing).to.deep.equal([])
-          expect(analysis.childRules.failing).to.deep.equal([])
+          expect(analysis.rules).to.deep.equal([])
+        })
+      })
+    })
+    describe('Object TERMINAL rules as values', () => {
+      describe('boolean as evaluate property', () => {
+        [true, false].forEach(booleanRule => {
+          let terminalObject = {
+            type: TERMINAL,
+            evaluate: booleanRule
+          }
+          it(`${String(booleanRule).toUpperCase()}: creates an appropriate rule for boolean evaluate prop on TERMINAL object`, () => {
+            const ruleObject = terminalObject
+            const ruleNode = new RuleNode(ruleObject)
+            const {
+              id, name, description, type,
+              parent, rules, value, analysis,
+              globalOptions, options, meta
+            } = ruleNode
+            expect(id).to.equal(`TERMINAL-no-name-provided`)
+            expect(name).to.equal(`${TERMINAL} rule`)
+            expect(description).to.equal(``)
+            expect(type).to.equal(TERMINAL)
+            expect(parent).to.equal(null)
+            expect(globalOptions).to.deep.equal({})
+            expect(options).to.deep.equal({})
+            expect(meta).to.deep.equal({})
+            expect(globalOptions).to.deep.equal({})
+            expect(options).to.deep.equal({})
+            expect(meta).to.deep.equal({})
+            expect(rules).to.deep.equal([])
+            expect(value).to.equal(ruleObject.evaluate)
+            expect(analysis instanceof AnalysisNode).to.equal(true)
+            expect(analysis.id).to.equal(id)
+            expect(analysis.name).to.equal(name)
+            expect(analysis.description).to.equal(description)
+            expect(analysis.type).to.equal(type)
+            expect(analysis.value).to.equal(value)
+            expect(analysis.rules).to.deep.equal([])
+          })
+        })
+      })
+      describe('function as evaluate property', () => {
+        [() => true, () => false].forEach(functionRule => {
+          const terminalObject ={
+            type: TERMINAL,
+            evaluate: functionRule
+          }
+          it(`function rule returning ${String(functionRule()).toUpperCase()}: creates an appropriate rule for boolean evaluate prop on TERMINAL object`, () => {
+            const ruleObject = terminalObject
+            const ruleNode = new RuleNode(ruleObject)
+            const {
+              id, name, description, type,
+              parent, rules, value, analysis,
+              globalOptions, options, meta
+            } = ruleNode
+            expect(id).to.equal(`TERMINAL-no-name-provided`)
+            expect(name).to.equal(`${TERMINAL} rule`)
+            expect(description).to.equal(``)
+            expect(type).to.equal(TERMINAL)
+            expect(parent).to.equal(null)
+            expect(globalOptions).to.deep.equal({})
+            expect(options).to.deep.equal({})
+            expect(meta).to.deep.equal({})
+            expect(globalOptions).to.deep.equal({})
+            expect(options).to.deep.equal({})
+            expect(meta).to.deep.equal({})
+            expect(rules).to.deep.equal([])
+            expect(value).to.equal(ruleObject.evaluate(ruleNode))
+            expect(analysis instanceof AnalysisNode).to.equal(true)
+            expect(analysis.id).to.equal(id)
+            expect(analysis.name).to.equal(name)
+            expect(analysis.description).to.equal(description)
+            expect(analysis.type).to.equal(type)
+            expect(analysis.value).to.equal(value)
+            expect(analysis.rules).to.deep.equal([])
+          })
+        })
+        it('can modify the ruleNode instance as a part of evaluation', () => {
+          const TEST_CUSTOM_PROP = {
+            key: 'value'
+          }
+          const RANDOM_PROPERTY_NAME = '___SOMETHING_WELL_NEVER_USE____'
+          const terminalObject ={
+            type: TERMINAL,
+            evaluate: (ruleNode) => {
+              ruleNode[RANDOM_PROPERTY_NAME] = TEST_CUSTOM_PROP
+              return true
+            }
+          }
+          const ruleNode = new RuleNode(terminalObject)
+          expect(ruleNode.value).to.equal(true)
+          expect(ruleNode[RANDOM_PROPERTY_NAME]).to.equal(TEST_CUSTOM_PROP)
         })
       })
     })
@@ -112,8 +202,7 @@ describe.only('RuleNode', () => {
         expect(analysis.description).to.equal(description)
         expect(analysis.type).to.equal(type)
         expect(analysis.value).to.equal(value)
-        expect(analysis.childRules.passing.length).to.equal(2)
-        expect(analysis.childRules.failing.length).to.equal(0)
+        expect(analysis.rules.length).to.equal(2)
       })
     })
     FALSE_RULES.forEach(rulesToUse => {
@@ -141,8 +230,10 @@ describe.only('RuleNode', () => {
         expect(analysis.description).to.equal(description)
         expect(analysis.type).to.equal(type)
         expect(analysis.value).to.equal(value)
-        expect(analysis.childRules.passing.length).to.equal(rulesToUse.filter(el => el).length)
-        expect(analysis.childRules.failing.length).to.equal(rulesToUse.filter(el => !el).length)
+        expect(analysis.rules.length).to.equal(rules.length)
+        analysis.rules.forEach(analysisRule => {
+          expect(analysisRule instanceof AnalysisNode).to.equal(true)
+        })
       })
     })
   })
@@ -175,8 +266,10 @@ describe.only('RuleNode', () => {
         expect(analysis.description).to.equal(description)
         expect(analysis.type).to.equal(type)
         expect(analysis.value).to.equal(value)
-        expect(analysis.childRules.passing.length).to.equal(rulesToUse.filter(el => el).length)
-        expect(analysis.childRules.failing.length).to.equal(rulesToUse.filter(el => !el).length)
+        expect(analysis.rules.length).to.equal(rules.length)
+        analysis.rules.forEach(analysisRule => {
+          expect(analysisRule instanceof AnalysisNode).to.equal(true)
+        })
       })
     })
     FALSE_RULES.forEach(rulesToUse => {
@@ -204,8 +297,10 @@ describe.only('RuleNode', () => {
         expect(analysis.description).to.equal(description)
         expect(analysis.type).to.equal(type)
         expect(analysis.value).to.equal(value)
-        expect(analysis.childRules.passing.length).to.equal(rulesToUse.filter(el => el).length)
-        expect(analysis.childRules.failing.length).to.equal(rulesToUse.filter(el => !el).length)
+        expect(analysis.rules.length).to.equal(rules.length)
+        analysis.rules.forEach(analysisRule => {
+          expect(analysisRule instanceof AnalysisNode).to.equal(true)
+        })
       })
     })
   })
@@ -238,8 +333,10 @@ describe.only('RuleNode', () => {
         expect(analysis.description).to.equal(description)
         expect(analysis.type).to.equal(type)
         expect(analysis.value).to.equal(value)
-        expect(analysis.childRules.passing.length).to.equal(rulesToUse.filter(el => el).length)
-        expect(analysis.childRules.failing.length).to.equal(rulesToUse.filter(el => !el).length)
+        expect(analysis.rules.length).to.equal(rules.length)
+        analysis.rules.forEach(analysisRule => {
+          expect(analysisRule instanceof AnalysisNode).to.equal(true)
+        })
       })
     })
     FALSE_RULES.forEach(rulesToUse => {
@@ -267,8 +364,10 @@ describe.only('RuleNode', () => {
         expect(analysis.description).to.equal(description)
         expect(analysis.type).to.equal(type)
         expect(analysis.value).to.equal(value)
-        expect(analysis.childRules.passing.length).to.equal(rulesToUse.filter(el => el).length)
-        expect(analysis.childRules.failing.length).to.equal(rulesToUse.filter(el => !el).length)
+        expect(analysis.rules.length).to.equal(rules.length)
+        analysis.rules.forEach(analysisRule => {
+          expect(analysisRule instanceof AnalysisNode).to.equal(true)
+        })
       })
     })
   })
