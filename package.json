@@ -1,6 +1,6 @@
 {
   "name": "jbre",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "jbre (jay-bray) is a json basic rule engine",
   "main": "src/ruleEngine.js",
   "scripts": {
@@ -11,10 +11,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "chai": "^4.2.0",
-    "mocha": "^6.2.0"
   },
   "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.2.0",
     "lodash": "^4.17.15",
     "shuffle-array": "^1.0.1"
   }
