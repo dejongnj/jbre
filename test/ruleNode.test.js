@@ -1,7 +1,7 @@
 const chai = require('chai')
-const RuleNode = require('../src/ruleTree/RuleNode')
-const AnalysisNode = require('../src/ruleTree/analysisNode')
-const { AND, OR, XOR, TERMINAL } = require('../src/constants/ruleTypes')
+const RuleNode = require('../dist/ruleTree/RuleNode').default
+const AnalysisNode = require('../dist/ruleTree/analysisNode').default
+const { AND, OR, XOR, TERMINAL } = require('../dist/constants/ruleTypes')
 const { expect } = chai
 
 const TEST_ID = 'TEST_ID'

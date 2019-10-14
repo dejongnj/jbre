@@ -1,4 +1,4 @@
-const AnalysisNode = require('../src/ruleTree/analysisNode')
+const AnalysisNode = require('../dist/ruleTree/analysisNode').default
 const { expect } = require('chai')
 
 
