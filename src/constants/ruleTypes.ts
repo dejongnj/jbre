@@ -1,0 +1,8 @@
+export const AND = 'AND'
+export const OR = 'OR'
+export const XOR = 'XOR'
+export const NAND = 'NAND'
+export const NOR = 'NOR'
+export const NXOR = 'NXOR'
+export const EXACTLY_ONE = 'EXACTLY_ONE'
+export const TERMINAL = 'TERMINAL'

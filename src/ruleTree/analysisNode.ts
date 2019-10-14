@@ -1,5 +1,14 @@
+import RuleNode from './ruleNode'
+
 class AnalysisNode {
-  constructor (ruleNode, analysisOptions = {}) {
+  id: string;
+  name: string;
+  description: string;
+  type: string;
+  value: boolean | null;
+  rules: AnalysisNode[];
+
+  constructor (ruleNode: RuleNode, analysisOptions: any = {}) {
     const { id, value, name, type, description } = ruleNode
     this.id = id
     this.name = name
@@ -15,7 +24,7 @@ class AnalysisNode {
       this._defaultAnalysis(ruleNode)
     }
   }
-  _defaultAnalysis (ruleNode) {
+  _defaultAnalysis (ruleNode: RuleNode) {
     const { rules = []} = ruleNode
     rules.forEach(ruleNode => {
         this.rules.push(ruleNode.analysis)
@@ -23,4 +32,4 @@ class AnalysisNode {
   }
 }
 
-module.exports = AnalysisNode
+export default AnalysisNode

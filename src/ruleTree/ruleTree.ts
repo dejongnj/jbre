@@ -1,11 +1,13 @@
-const RuleNode = require('./RuleNode')
+import RuleNode from './RuleNode'
 
 class RuleTree {
-  constructor (rulesObject, globalOptions = {}) {
+  options: any;
+  root: RuleNode;
+  constructor (rulesObject: any, globalOptions: any = {}) {
     this.options = globalOptions
-    this.root = this.build(rulesObject, globalOptions)
+    this.root = this.build(rulesObject)
   }
-  build (ruleObject) { // builds tree from a rules object
+  build (ruleObject: any) { // builds tree from a rules object
     return new RuleNode(ruleObject, null, this.options)
   }
   evaluate () {
@@ -16,4 +18,4 @@ class RuleTree {
   }
 }
 
-module.exports = RuleTree
+export default RuleTree

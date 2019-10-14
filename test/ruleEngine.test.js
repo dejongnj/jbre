@@ -1,7 +1,7 @@
 const chai = require('chai')
-const ruleEngine = require('../src/ruleEngine')
+const ruleEngine = require('../dist/ruleEngine').default
 const testRules = require('./testdata')
-const { AND, NAND, OR, NOR, XOR, NXOR, EXACTLY_ONE, TERMINAL } = require('../src/constants/ruleTypes')
+const { AND, NAND, OR, NOR, XOR, NXOR, EXACTLY_ONE, TERMINAL } = require('../dist/constants/ruleTypes')
 const { expect } = chai
 const { createAllTrue, createAllFalse, createOneTrue, createRuleSet,
         createOneFalse, createVariableRules, randomFromRange } = testRules
