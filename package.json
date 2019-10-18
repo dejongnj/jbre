@@ -4,8 +4,8 @@
   "description": "jbre (jay-bray) is a json basic rule engine",
   "main": "dist/ruleEngine.js",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/dejongnj/jbre.git"
+    "type": "git",
+    "url": "https://github.com/dejongnj/jbre.git"
   },
   "scripts": {
     "test": "nyc --reporter=html --reporter=text mocha \"test/**/*.test.js\" --recursive",
@@ -17,7 +17,7 @@
   "dependencies": {
     "ts-node": "^8.4.1",
     "tslint": "^5.20.0",
-    "typescript": "^3.6.4"
+    "typescript": "^3.7.0-beta"
   },
   "devDependencies": {
     "chai": "^4.2.0",
