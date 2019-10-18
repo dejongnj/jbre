@@ -85,20 +85,24 @@
         "version": "6b2ffa0a8714dc191c7be4969a889e884ed0ba8ceab468256e9efa94d41cef42",
         "signature": "2cd4f9bfcbcbca9ffa319f60b8286988ef0cf5657716fca7cc47e4015ef99aa1"
       },
+      "../src/ruletree/rulenodetypes.ts": {
+        "version": "7a77ff34e96910b2ac576bd5ae67ee872174f5bbd5d62281e435ece6637c3148",
+        "signature": "9d0f70f6ea57cb70be5a0375ae8944bb6c7d546b3857ac6ae1ec880b6d5ce2b5"
+      },
       "../src/ruletree/rulenode.ts": {
-        "version": "1935d575a8d548532be8771207e087fbdde94b3814a9d4dc719b0a257c321b34",
-        "signature": "9462633ab036604da3e93ef51926a494cc00b3dfabd8027f27c63017bf8ef078"
+        "version": "c61570f817650250d5dc2113780a5d66517e41ebfae2e41aad4726d5b211cf89",
+        "signature": "83823d33751ef321115f0c18845ef9df0e0cdd07f7ca6d83165f9a6753e54333"
       },
       "../src/ruletree/ruletree.ts": {
-        "version": "c0ddd6dfcaf756bda00a7b5734773f9873958d90dfb5b65aa58f772e500f41cf",
-        "signature": "0c2ee55e812d4ac0ed37ff008727c3b24f78f2cbf9d291313eb0fb34c551e58f"
+        "version": "2ae7f440e0fd5555f87b85a4e64b4c013be0ddfa29df87c12114b8888700a7e1",
+        "signature": "4c37081d7d581a6357d108671779c49912eafa73cf57d0549eeee09124ec2cfa"
       },
       "../src/ruleengine.ts": {
         "version": "2276edb4cb5b99a280a9b5a87cc7673e04d5a6b6db09d34548771a2248846f51",
         "signature": "c41049ec2dd370d15688b45068c55378687bb451d513920468085275020e6381"
       },
       "../src/ruletree/index.ts": {
-        "version": "dfefc7844d11c83fd52892f648c6cb883cd561c11bc682de4a9245fd0407e8c2",
+        "version": "ad9d1f3839ac00e206fc953e056596c49f46098a8c866657127150dacf0e0455",
         "signature": "55943606513fbb901126769d8e0fd35665779c0e68d386fb5433e7e18fb46a18"
       }
     },
@@ -114,7 +118,6 @@
       "strict": true,
       "incremental": true,
       "moduleResolution": 2,
-      "watch": true,
       "configFilePath": "../tsconfig.json"
     },
     "referencedMap": {
@@ -123,7 +126,8 @@
       ],
       "../src/ruletree/rulenode.ts": [
         "../src/constants/ruletypes.ts",
-        "../src/ruletree/analysisnode.ts"
+        "../src/ruletree/analysisnode.ts",
+        "../src/ruletree/rulenodetypes.ts"
       ],
       "../src/ruletree/ruletree.ts": [
         "../src/ruletree/rulenode.ts"
@@ -142,7 +146,8 @@
         "../src/ruletree/rulenode.ts"
       ],
       "../src/ruletree/rulenode.ts": [
-        "../src/ruletree/analysisnode.ts"
+        "../src/ruletree/analysisnode.ts",
+        "../src/ruletree/rulenodetypes.ts"
       ],
       "../src/ruletree/ruletree.ts": [
         "../src/ruletree/analysisnode.ts",
@@ -178,11 +183,12 @@
       "../../../.nvm/versions/node/v10.16.3/lib/node_modules/typescript/lib/lib.es2017.intl.d.ts",
       "../../../.nvm/versions/node/v10.16.3/lib/node_modules/typescript/lib/lib.es2017.typedarrays.d.ts",
       "../src/constants/ruletypes.ts",
-      "../src/ruletree/analysisnode.ts",
+      "../src/ruletree/rulenodetypes.ts",
       "../src/ruletree/rulenode.ts",
+      "../src/ruletree/index.ts",
       "../src/ruletree/ruletree.ts",
       "../src/ruleengine.ts",
-      "../src/ruletree/index.ts"
+      "../src/ruletree/analysisnode.ts"
     ]
   },
   "version": "3.6.4"

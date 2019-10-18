@@ -24,15 +24,17 @@ const getNodeType = (ruleObject) => {
         return ruleTypes_1.TERMINAL;
     const allowedTypes = [ruleTypes_1.AND, ruleTypes_1.NAND, ruleTypes_1.OR, ruleTypes_1.NOR, ruleTypes_1.XOR, ruleTypes_1.NXOR, ruleTypes_1.EXACTLY_ONE, ruleTypes_1.TERMINAL];
     const validDataType = typeof ruleObject === 'object' && typeof ruleObject.type === 'string';
-    if (validDataType && allowedTypes.includes(ruleObject.type.toUpperCase()))
-        return ruleObject.type.toUpperCase();
+    const type = (ruleObject === undefined) ? '' : ruleObject.type || '';
+    if (validDataType && allowedTypes.includes(type.toUpperCase())) {
+        return type.toUpperCase();
+    }
     throw new Error('invalid type of rule for' + ruleObject);
 };
 const getNodeName = (ruleObject) => {
     const terminalTypes = ['boolean', 'function'];
     if (terminalTypes.includes(typeof ruleObject))
         return `${ruleTypes_1.TERMINAL} rule`;
-    let name = ruleObject && ruleObject.name;
+    const name = ruleObject && ruleObject.name;
     return name ? name : (ruleObject && `${ruleObject.type} rule`) || 'NO INFO RULE NAME';
 };
 const getTerminalResult = (ruleObject, ruleNode) => {
@@ -74,12 +76,12 @@ const getMeta = (ruleObject, globalOptions) => {
 };
 const typeToEvaluationFunctionsMap = {
     AND: (evaluatedRules) => evaluatedRules.every((childRuleNode) => !!childRuleNode.value),
-    NAND: (evaluatedRules) => !evaluatedRules.every((childRuleNode) => !!childRuleNode.value),
-    OR: (evaluatedRules) => evaluatedRules.some((childRuleNode) => !!childRuleNode.value),
-    NOR: (evaluatedRules) => !evaluatedRules.some((childRuleNode) => !!childRuleNode.value),
-    XOR: (evaluatedRules) => evaluatedRules.filter((childRuleNode) => !!childRuleNode.value).length % 2 === 1,
-    NXOR: (evaluatedRules) => !(evaluatedRules.filter((childRuleNode) => !!childRuleNode.value).length % 2 === 1),
     EXACTLY_ONE: (evaluatedRules) => evaluatedRules.filter((childRuleNode) => !!childRuleNode.value).length === 1,
+    NAND: (evaluatedRules) => !evaluatedRules.every((childRuleNode) => !!childRuleNode.value),
+    NOR: (evaluatedRules) => !evaluatedRules.some((childRuleNode) => !!childRuleNode.value),
+    NXOR: (evaluatedRules) => !(evaluatedRules.filter((childRuleNode) => !!childRuleNode.value).length % 2 === 1),
+    OR: (evaluatedRules) => evaluatedRules.some((childRuleNode) => !!childRuleNode.value),
+    XOR: (evaluatedRules) => evaluatedRules.filter((childRuleNode) => !!childRuleNode.value).length % 2 === 1,
 };
 const evaluateByType = (type) => (ruleNode) => {
     if (type === ruleTypes_1.TERMINAL)
@@ -111,7 +113,7 @@ class RuleNode {
     }
     evaluateChildRules(ruleNode = this) {
         const { rules = [] } = ruleNode;
-        return rules.map(childRuleNode => childRuleNode.evaluate());
+        return rules.map((childRuleNode) => childRuleNode.evaluate());
     }
     analyze(ruleNode = this) {
         return new analysisNode_1.default(ruleNode);

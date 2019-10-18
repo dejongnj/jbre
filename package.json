@@ -1,6 +1,6 @@
 {
   "name": "jbre",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "jbre (jay-bray) is a json basic rule engine",
   "main": "dist/ruleEngine.js",
   "repository": {

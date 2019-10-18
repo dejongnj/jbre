@@ -1,4 +1,4 @@
-import RuleNode from './RuleNode';
+import RuleNode from './ruleNode';
 declare class RuleTree {
     options: any;
     root: RuleNode;
