@@ -1,4 +1,4 @@
-import AnalysisNode from './analysisNode';
+import { IRuleObject } from './ruleNodeTypes';
 declare class RuleNode {
     id: string;
     name: string;
@@ -8,13 +8,11 @@ declare class RuleNode {
     globalOptions: any;
     options: any;
     meta: any;
-    analysis: AnalysisNode;
     rules: RuleNode[];
     value: boolean | null;
-    constructor(ruleObject: any, parentNode?: RuleNode | null, globalOptions?: {});
+    constructor(ruleObject: IRuleObject, parentNode?: RuleNode | null, globalOptions?: {});
     evaluate(ruleNode?: this): RuleNode;
     evaluateChildRules(ruleNode?: this): RuleNode[];
-    analyze(ruleNode?: this): AnalysisNode;
     setValue(ruleObject: any, parentNode?: RuleNode | null, globalOptions?: {}): void;
 }
 export default RuleNode;

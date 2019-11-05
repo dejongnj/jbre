@@ -1,8 +1,3 @@
-import RuleTree from './ruleTree/ruleTree'
+import RuleNode from './ruleNode';
 
-const ruleEngine = (rulesObject: any, options = {}) => {
-  const ruleTree = new RuleTree(rulesObject, options)
-  return ruleTree
-}
-
-export default ruleEngine
+export default RuleNode;

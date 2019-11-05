@@ -81,29 +81,17 @@
         "version": "d0a511cd16fbf26bd941c53a1bd540a72b4192be483491b5d1c98f009c77455a",
         "signature": "a7e8c1920b3363416ae89b6886db686e3251076542c20661cad8d05d25c75487"
       },
-      "../src/ruletree/analysisnode.ts": {
-        "version": "6b2ffa0a8714dc191c7be4969a889e884ed0ba8ceab468256e9efa94d41cef42",
-        "signature": "2cd4f9bfcbcbca9ffa319f60b8286988ef0cf5657716fca7cc47e4015ef99aa1"
+      "../src/rulenodetypes.ts": {
+        "version": "994154d79c35a98cc46d6c9e8ddc38b61590305438fd6cd34597a7727480ac09",
+        "signature": "f24a6de2c63af6022b59693d5c895f7cd78fb296ceee880b7fbd3cad6a08f998"
       },
-      "../src/ruletree/rulenodetypes.ts": {
-        "version": "7a77ff34e96910b2ac576bd5ae67ee872174f5bbd5d62281e435ece6637c3148",
-        "signature": "9d0f70f6ea57cb70be5a0375ae8944bb6c7d546b3857ac6ae1ec880b6d5ce2b5"
-      },
-      "../src/ruletree/rulenode.ts": {
-        "version": "c61570f817650250d5dc2113780a5d66517e41ebfae2e41aad4726d5b211cf89",
-        "signature": "83823d33751ef321115f0c18845ef9df0e0cdd07f7ca6d83165f9a6753e54333"
-      },
-      "../src/ruletree/ruletree.ts": {
-        "version": "2ae7f440e0fd5555f87b85a4e64b4c013be0ddfa29df87c12114b8888700a7e1",
-        "signature": "4c37081d7d581a6357d108671779c49912eafa73cf57d0549eeee09124ec2cfa"
+      "../src/rulenode.ts": {
+        "version": "12c4c86b0a95a9e751c860fac2ed3f7bf6457d4cb053970a856c13b3a040cc26",
+        "signature": "484a60a46ca37fe46f1e54193adab6fc0ae78ef0bdfedf608da449ccd989a618"
       },
       "../src/ruleengine.ts": {
-        "version": "2276edb4cb5b99a280a9b5a87cc7673e04d5a6b6db09d34548771a2248846f51",
-        "signature": "c41049ec2dd370d15688b45068c55378687bb451d513920468085275020e6381"
-      },
-      "../src/ruletree/index.ts": {
-        "version": "ad9d1f3839ac00e206fc953e056596c49f46098a8c866657127150dacf0e0455",
-        "signature": "55943606513fbb901126769d8e0fd35665779c0e68d386fb5433e7e18fb46a18"
+        "version": "511fa3ab53cedfdd8442ec61fc76638600cb0e683be9331d609cb1a7be60a6c9",
+        "signature": "28504eaea0c0a0aaa1e3957d1073fb49f01d791cab9f119a5eb40774e385dc5a"
       }
     },
     "options": {
@@ -118,48 +106,21 @@
       "strict": true,
       "incremental": true,
       "moduleResolution": 2,
+      "watch": true,
       "configFilePath": "../tsconfig.json"
     },
     "referencedMap": {
-      "../src/ruletree/analysisnode.ts": [
-        "../src/ruletree/rulenode.ts"
-      ],
-      "../src/ruletree/rulenode.ts": [
+      "../src/rulenode.ts": [
         "../src/constants/ruletypes.ts",
-        "../src/ruletree/analysisnode.ts",
-        "../src/ruletree/rulenodetypes.ts"
-      ],
-      "../src/ruletree/ruletree.ts": [
-        "../src/ruletree/rulenode.ts"
+        "../src/rulenodetypes.ts"
       ],
       "../src/ruleengine.ts": [
-        "../src/ruletree/ruletree.ts"
-      ],
-      "../src/ruletree/index.ts": [
-        "../src/ruletree/analysisnode.ts",
-        "../src/ruletree/rulenode.ts",
-        "../src/ruletree/ruletree.ts"
+        "../src/rulenode.ts"
       ]
     },
     "exportedModulesMap": {
-      "../src/ruletree/analysisnode.ts": [
-        "../src/ruletree/rulenode.ts"
-      ],
-      "../src/ruletree/rulenode.ts": [
-        "../src/ruletree/analysisnode.ts",
-        "../src/ruletree/rulenodetypes.ts"
-      ],
-      "../src/ruletree/ruletree.ts": [
-        "../src/ruletree/analysisnode.ts",
-        "../src/ruletree/rulenode.ts"
-      ],
       "../src/ruleengine.ts": [
-        "../src/ruletree/ruletree.ts"
-      ],
-      "../src/ruletree/index.ts": [
-        "../src/ruletree/ruletree.ts",
-        "../src/ruletree/analysisnode.ts",
-        "../src/ruletree/rulenode.ts"
+        "../src/rulenode.ts"
       ]
     },
     "semanticDiagnosticsPerFile": [
@@ -183,12 +144,9 @@
       "../../../.nvm/versions/node/v10.16.3/lib/node_modules/typescript/lib/lib.es2017.intl.d.ts",
       "../../../.nvm/versions/node/v10.16.3/lib/node_modules/typescript/lib/lib.es2017.typedarrays.d.ts",
       "../src/constants/ruletypes.ts",
-      "../src/ruletree/rulenodetypes.ts",
-      "../src/ruletree/rulenode.ts",
-      "../src/ruletree/index.ts",
-      "../src/ruletree/ruletree.ts",
+      "../src/rulenodetypes.ts",
       "../src/ruleengine.ts",
-      "../src/ruletree/analysisnode.ts"
+      "../src/rulenode.ts"
     ]
   },
   "version": "3.6.4"

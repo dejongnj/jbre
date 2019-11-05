@@ -1,8 +1,4 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const ruleTree_1 = require("./ruleTree/ruleTree");
-const ruleEngine = (rulesObject, options = {}) => {
-    const ruleTree = new ruleTree_1.default(rulesObject, options);
-    return ruleTree;
-};
-exports.default = ruleEngine;
+const ruleNode_1 = require("./ruleNode");
+exports.default = ruleNode_1.default;

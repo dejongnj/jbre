@@ -8,6 +8,7 @@
     "url": "https://github.com/dejongnj/jbre.git"
   },
   "scripts": {
+    "build": "",
     "test": "nyc --reporter=html --reporter=text mocha \"test/**/*.test.js\" --recursive",
     "test:watch": "mocha \"test/**/*.test.js\" --recursive --watch"
   },

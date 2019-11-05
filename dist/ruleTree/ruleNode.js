@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const ruleTypes_1 = require("../constants/ruleTypes");
-const analysisNode_1 = require("./analysisNode");
 // what does a rule node look like:
 /*
 {
@@ -16,26 +15,22 @@ const analysisNode_1 = require("./analysisNode");
 }
 
 */
+const allowedTypes = [ruleTypes_1.AND, ruleTypes_1.NAND, ruleTypes_1.OR, ruleTypes_1.NOR, ruleTypes_1.XOR, ruleTypes_1.NXOR, ruleTypes_1.EXACTLY_ONE, ruleTypes_1.TERMINAL];
+const randomString = () => Math.random().toString(36).slice(2);
+const createId = () => `${randomString()}-${randomString()}`;
 const isObject = (value) => typeof value === 'object';
 const getNodeType = (ruleObject) => {
     // returns one of TERMINAL, AND, OR, XOR or throws an error
-    const terminalTypes = ['boolean', 'function'];
-    if (terminalTypes.includes(typeof ruleObject))
-        return ruleTypes_1.TERMINAL;
-    const allowedTypes = [ruleTypes_1.AND, ruleTypes_1.NAND, ruleTypes_1.OR, ruleTypes_1.NOR, ruleTypes_1.XOR, ruleTypes_1.NXOR, ruleTypes_1.EXACTLY_ONE, ruleTypes_1.TERMINAL];
     const validDataType = typeof ruleObject === 'object' && typeof ruleObject.type === 'string';
     const type = (ruleObject === undefined) ? '' : ruleObject.type || '';
     if (validDataType && allowedTypes.includes(type.toUpperCase())) {
         return type.toUpperCase();
     }
-    throw new Error('invalid type of rule for' + ruleObject);
+    return ruleTypes_1.TERMINAL;
 };
 const getNodeName = (ruleObject) => {
-    const terminalTypes = ['boolean', 'function'];
-    if (terminalTypes.includes(typeof ruleObject))
-        return `${ruleTypes_1.TERMINAL} rule`;
     const name = ruleObject && ruleObject.name;
-    return name ? name : (ruleObject && `${ruleObject.type} rule`) || 'NO INFO RULE NAME';
+    return name ? name : (ruleObject && ruleObject.type && `${ruleObject.type} rule`) || '';
 };
 const getTerminalResult = (ruleObject, ruleNode) => {
     // this function is only called for TERMINAL types which are leaf nodes where the value is known
@@ -48,23 +43,11 @@ const getTerminalResult = (ruleObject, ruleNode) => {
         return ruleObject(ruleNode);
     throw new Error('only boolean and functions are valid TERMINAL rule types');
 };
-const getNodeDescription = (ruleObject) => {
-    const typeofRuleObject = typeof ruleObject;
-    return isObject(ruleObject) ? ruleObject.description || '' : `${ruleTypes_1.TERMINAL}-${typeofRuleObject}`;
+const getNodeDescription = (ruleObject) => isObject(ruleObject) ? ruleObject.description : '';
+const getNodeId = (ruleObject) => {
+    return (isObject(ruleObject) && ruleObject.id) ? ruleObject.id : createId();
 };
-const constructRuleNodeId = (ruleObject, parentNode) => {
-    const suffix = isObject(ruleObject) ? `${ruleObject.type}${ruleObject.name ? `-${ruleObject.name}` : '-no-name-provided'}` : `TERMINAL-${typeof ruleObject}`;
-    return parentNode ? `${parentNode.id}-${suffix}` : suffix;
-};
-const getNodeId = (ruleObject, parentNode) => {
-    return (isObject(ruleObject) && ruleObject.id) ? ruleObject.id : constructRuleNodeId(ruleObject, parentNode);
-};
-const getOptions = (ruleObject) => {
-    if (!isObject(ruleObject))
-        return {};
-    const { options = {} } = ruleObject;
-    return options;
-};
+const getOptions = (ruleObject) => !isObject(ruleObject) ? {} : ruleObject.options || {};
 const getMeta = (ruleObject, globalOptions) => {
     const { meta: globalMeta = {} } = globalOptions;
     if (!isObject(ruleObject))
@@ -96,7 +79,7 @@ const evaluateByType = (type) => (ruleNode) => {
 class RuleNode {
     constructor(ruleObject, parentNode = null, globalOptions = {}) {
         this.rules = [];
-        this.id = getNodeId(ruleObject, parentNode); // to change soon; will require or create id
+        this.id = getNodeId(ruleObject); // to change soon; will require or create id
         this.name = getNodeName(ruleObject);
         this.description = getNodeDescription(ruleObject);
         this.type = getNodeType(ruleObject);
@@ -105,7 +88,6 @@ class RuleNode {
         this.options = getOptions(ruleObject);
         this.meta = getMeta(ruleObject, globalOptions);
         this.setValue(ruleObject, parentNode, globalOptions);
-        this.analysis = this.analyze(); // has to be after this.value is determined
     }
     evaluate(ruleNode = this) {
         const { type } = ruleNode;
@@ -114,9 +96,6 @@ class RuleNode {
     evaluateChildRules(ruleNode = this) {
         const { rules = [] } = ruleNode;
         return rules.map((childRuleNode) => childRuleNode.evaluate());
-    }
-    analyze(ruleNode = this) {
-        return new analysisNode_1.default(ruleNode);
     }
     setValue(ruleObject, parentNode = null, globalOptions = {}) {
         if (this.type === ruleTypes_1.TERMINAL) {
