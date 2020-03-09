@@ -86,7 +86,7 @@
         "signature": "f24a6de2c63af6022b59693d5c895f7cd78fb296ceee880b7fbd3cad6a08f998"
       },
       "../src/rulenode.ts": {
-        "version": "12c4c86b0a95a9e751c860fac2ed3f7bf6457d4cb053970a856c13b3a040cc26",
+        "version": "7c1f7cefabd7262969ccac51052239ff46611a4bd0e4dd97ebb785940e1ec556",
         "signature": "484a60a46ca37fe46f1e54193adab6fc0ae78ef0bdfedf608da449ccd989a618"
       },
       "../src/ruleengine.ts": {
@@ -119,6 +119,9 @@
       ]
     },
     "exportedModulesMap": {
+      "../src/rulenode.ts": [
+        "../src/rulenodetypes.ts"
+      ],
       "../src/ruleengine.ts": [
         "../src/rulenode.ts"
       ]
@@ -145,8 +148,8 @@
       "../../../.nvm/versions/node/v10.16.3/lib/node_modules/typescript/lib/lib.es2017.typedarrays.d.ts",
       "../src/constants/ruletypes.ts",
       "../src/rulenodetypes.ts",
-      "../src/ruleengine.ts",
-      "../src/rulenode.ts"
+      "../src/rulenode.ts",
+      "../src/ruleengine.ts"
     ]
   },
   "version": "3.6.4"

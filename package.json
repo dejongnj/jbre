@@ -10,7 +10,7 @@
   "scripts": {
     "build": "",
     "test": "nyc --reporter=html --reporter=text mocha \"test/**/*.test.js\" --recursive",
-    "test:watch": "mocha \"test/**/*.test.js\" --recursive --watch"
+    "test:watch": "mocha \"test/**/*.test.js\" --recursive --watch dist/**/*.js"
   },
   "keywords": [],
   "author": "NJ de Jong",

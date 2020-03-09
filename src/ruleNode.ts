@@ -30,10 +30,7 @@ const getNodeType = (ruleObject: IRuleObject ) => {
   return TERMINAL;
 };
 
-const getNodeName = (ruleObject: IRuleObject) => {
-  const name = ruleObject && ruleObject.name;
-  return name ? name : (ruleObject && ruleObject.type && `${ruleObject.type} rule`) || '';
-};
+const getNodeName = (ruleObject: IRuleObject) => (ruleObject && ruleObject.name) || '';
 
 const getTerminalResult = (ruleObject: any, ruleNode: RuleNode) => {
   // this function is only called for TERMINAL types which are leaf nodes where the value is known
